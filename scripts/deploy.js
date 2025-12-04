@@ -46,7 +46,7 @@ async function main() {
     fs.writeFileSync(envPath, envContent);
 
     // Resumen
-    console.log("\n=== DEPLOY COMPLETADO ===");
+
     console.log("MovieNFT:", movieNFT.address);
     console.log("CinemaWallet:", cinemaWallet.address);
     console.log("Owner:", deployer.address, `(${ownerShare}%)`);
