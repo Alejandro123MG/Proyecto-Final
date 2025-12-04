@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinePelis - DApp de Peliculas NFT</title>
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components/navbar.css">
+    <link rel="stylesheet" href="css/components/cards.css">
+    <link rel="stylesheet" href="css/components/modal.css">
+    <link rel="stylesheet" href="css/components/cart.css">
+    <link rel="stylesheet" href="css/pages/catalog.css">
+    <link rel="stylesheet" href="css/pages/admin.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="#" class="navbar-brand">
+                <span style="color: var(--primary);">Cine</span><span>Pelis</span>
+            </a>
+
+            <button class="navbar-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="navbar-menu">
+                <ul class="navbar-links">
+                    <li><a href="#" class="navbar-link active" data-page="catalog">Catalogo</a></li>
+                    <li><a href="#" class="navbar-link" data-page="purchases">Mis Peliculas</a></li>
+                    <li><a href="#" class="navbar-link" data-page="admin" style="display: none;">Admin</a></li>
+                </ul>
+
+                <div class="navbar-actions">
+                    <!-- Boton carrito -->
+                    <button id="btn-cart" class="cart-btn" onclick="Cart.toggle()">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-badge" style="display: none;">0</span>
+                    </button>
+
+                    <!-- Boton conectar wallet -->
+                    <button id="btn-connect-wallet" class="btn btn-primary">
+                        <i class="fab fa-ethereum"></i> Conectar
+                    </button>
+
+                    <!-- Info de cuenta (oculto hasta conectar) -->
+                    <div id="account-info" class="navbar-account hidden">
+                        <div class="account-dropdown">
+                            <button class="account-btn">
+                                <span class="account-indicator"></span>
+                                <span class="account-address">No conectado</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="account-menu">
+                                <button class="account-menu-item" id="btn-disconnect">
+                                    <i class="fas fa-sign-out-alt"></i> Desconectar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+
+            <section id="page-catalog" class="page-section active">
+                <div class="catalog-header">
+                    <h1 class="section-title">Catalogo de Peliculas</h1>
+                    <div class="catalog-filters">
+                        <div class="search-box">
+                            <span class="search-box-icon"><i class="fas fa-search"></i></span>
+                            <input type="text" id="search-movies" placeholder="Buscar peliculas...">
+                        </div>
+                        <select id="filter-genre" class="filter-select">
+                            <option value="">Todos los generos</option>
+                            <option value="accion">Accion</option>
+                            <option value="comedia">Comedia</option>
+                            <option value="drama">Drama</option>
+                            <option value="terror">Terror</option>
+                            <option value="ciencia ficcion">Ciencia Ficcion</option>
+                            <option value="animacion">Animacion</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="catalog-movies" class="movies-grid">
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-state-icon"><i class="fas fa-link"></i></div>
+                        <h3 class="empty-state-title">Conecta tu Wallet</h3>
+                        <p class="empty-state-text">Conecta tu wallet de MetaMask para ver el catalogo de peliculas</p>
+                        <button class="btn btn-primary mt-2" onclick="App.connectWallet()">
+                            <i class="fab fa-ethereum"></i> Conectar MetaMask
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-purchases" class="page-section">
+                <div class="catalog-header">
+                    <h1 class="section-title">Mis Peliculas</h1>
+                    <div class="stat-card" style="padding: 12px 24px;">
+                        <span class="text-muted">Total: </span>
+                        <span id="purchases-count" class="price-value" style="font-size: 1.2rem;">0</span>
+                    </div>
+                </div>
+
+                <div id="purchases-movies" class="movies-grid">
+                </div>
+            </section>
+
+            <section id="page-admin" class="page-section">
+                <div class="admin-header">
+                    <h1 class="section-title">Panel de Administracion</h1>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="admin-total-movies">0</div>
+                        <div class="stat-label">Total Peliculas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="admin-active-movies">0</div>
+                        <div class="stat-label">Peliculas Activas</div>
+                    </div>
+                </div>
+
+                <div class="admin-tabs">
+                    <button class="admin-tab active" data-tab="movies">Peliculas</button>
+                    <button class="admin-tab" data-tab="add">Agregar Pelicula</button>
+                </div>
+
+                <div id="panel-movies" class="admin-panel active">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titulo</th>
+                                    <th>Genero</th>
+                                    <th>Precio</th>
+                                    <th>Ventas</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="movies-table-body">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted" style="padding: 40px;">
+                                        Cargando peliculas...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="panel-add" class="admin-panel">
+                    <div class="admin-form">
+                        <h3 class="admin-form-title"><i class="fas fa-film"></i> Agregar Nueva Pelicula</h3>
+                        <form id="form-add-movie">
+                            <div class="form-group">
+                                <label class="form-label">Titulo *</label>
+                                <input type="text" name="title" class="form-control" placeholder="Ej: Inception" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Director</label>
+                                <input type="text" name="director" class="form-control" placeholder="Ej: Christopher Nolan">
+                            </div>
+                            <div class="admin-form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Genero</label>
+                                    <select name="genre" class="form-control">
+                                        <option value="">Seleccionar...</option>
+                                        <option value="Accion">Accion</option>
+                                        <option value="Comedia">Comedia</option>
+                                        <option value="Drama">Drama</option>
+                                        <option value="Terror">Terror</option>
+                                        <option value="Ciencia Ficcion">Ciencia Ficcion</option>
+                                        <option value="Animacion">Animacion</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Año de estreno</label>
+                                    <input type="number" name="releaseYear" class="form-control" placeholder="2024" min="1900" max="2030">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Sinopsis</label>
+                                <textarea name="synopsis" class="form-control" placeholder="Descripcion de la pelicula..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Precio (ETH) *</label>
+                                <input type="number" name="price" class="form-control" placeholder="0.01" step="0.001" min="0.001" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Poster de la Pelicula</label>
+                                <div class="file-upload-wrapper" id="poster-upload-label">
+                                    <input type="file" name="poster" id="poster-input" class="file-upload-input" accept="image/*">
+                                    <!-- Estado: Sin archivo -->
+                                    <div class="file-upload-empty" id="poster-empty">
+                                        <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
+                                        <span class="file-upload-text">Arrastra una imagen o haz clic para seleccionar</span>
+                                        <span class="file-upload-hint">PNG, JPG o WEBP (Max. 5MB)</span>
+                                    </div>
+                                    <!-- Estado: Con archivo -->
+                                    <div class="file-upload-preview" id="poster-preview">
+                                        <img id="poster-preview-img" src="" alt="Preview">
+                                        <div class="file-upload-preview-info">
+                                            <div class="file-upload-preview-name" id="poster-file-name">imagen.jpg</div>
+                                            <div class="file-upload-preview-size" id="poster-file-size">0 KB</div>
+                                        </div>
+                                        <button type="button" class="file-upload-preview-remove" id="poster-remove" title="Eliminar">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="posterURI" id="poster-uri">
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;" id="btn-add-movie">
+                                Agregar Pelicula
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div class="cart-header">
+            <h3 class="cart-title"><i class="fas fa-shopping-cart"></i> Carrito</h3>
+            <button class="cart-close" onclick="Cart.close()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <div class="cart-empty">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Tu carrito esta vacio</p>
+            </div>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total-row">
+                <span class="cart-total-label">Total:</span>
+                <span class="cart-total-value" id="cart-total">0 ETH</span>
+            </div>
+            <button id="btn-checkout" class="btn-checkout" onclick="Cart.checkout()" disabled>
+                <i class="fas fa-credit-card"></i> Pagar
+            </button>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 40px 20px; color: var(--text-muted); border-top: 1px solid var(--dark-lighter);">
+        <p>CinePelis DApp - Proyecto Final Blockchain</p>
+        <p style="font-size: 0.85rem; margin-top: 8px;">
+            Red: Ethereum Sepolia | Contratos: MovieNFT + CinemaWallet
+        </p>
+    </footer>
+
+    <script src="js/services/wallet.js"></script>
+
+    <script src="js/components/toast.js"></script>
+    <script src="js/components/modal.js"></script>
+    <script src="js/components/movieCard.js"></script>
+    <script src="js/components/navbar.js"></script>
+    <script src="js/components/cart.js"></script>
+
+    <script src="js/pages/catalog.js"></script>
+    <script src="js/pages/purchases.js"></script>
+    <script src="js/pages/admin.js"></script>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

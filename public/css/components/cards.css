@@ -1,0 +1,217 @@
+.movie-card {
+    background: var(--dark-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: var(--transition);
+    cursor: pointer;
+    position: relative;
+}
+
+.movie-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+.movie-card-image {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+    background: var(--dark-lighter);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.movie-card-placeholder {
+    width: 100%;
+    aspect-ratio: 2/3;
+    background: linear-gradient(135deg, var(--dark-lighter) 0%, var(--dark-light) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: var(--secondary);
+}
+
+.movie-card-placeholder i {
+    opacity: 0.6;
+}
+
+.movie-card-poster {
+    width: 100%;
+    aspect-ratio: 2/3;
+    overflow: hidden;
+    background: var(--dark-lighter);
+}
+
+.movie-card-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.movie-card:hover .movie-card-poster img {
+    transform: scale(1.05);
+}
+
+.movie-card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 50%);
+    opacity: 0;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+}
+
+.movie-card:hover .movie-card-overlay {
+    opacity: 1;
+}
+
+.movie-card-content {
+    padding: 16px;
+}
+
+.movie-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-card-director {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-card-director i {
+    margin-right: 6px;
+    font-size: 0.75rem;
+    color: var(--primary);
+}
+
+.movie-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.movie-card-genre {
+    padding: 4px 8px;
+    background: var(--dark-lighter);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.movie-card-price {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.price-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--success);
+}
+
+.price-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.movie-card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    z-index: 2;
+}
+
+.badge-purchased {
+    background: var(--success);
+    color: var(--dark);
+}
+
+.badge-inactive {
+    background: var(--secondary);
+    color: var(--text);
+}
+
+.badge-new {
+    background: var(--primary);
+    color: var(--text);
+}
+
+/* Movie Card Actions */
+.movie-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.movie-card-actions .btn {
+    flex: 1;
+    padding: 10px;
+    font-size: 0.8rem;
+}
+
+.movie-card-actions .btn.in-cart {
+    background: var(--success);
+    border-color: var(--success);
+    opacity: 0.7;
+}
+
+.movie-card-actions .btn i {
+    margin-right: 4px;
+}
+
+/* ========================================
+   INFO CARD COMPONENT
+   ======================================== */
+
+.info-card {
+    background: var(--dark-light);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    border: 1px solid var(--dark-lighter);
+}
+
+.info-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--dark-lighter);
+}
+
+.info-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.info-card-icon {
+    font-size: 1.5rem;
+}
+
